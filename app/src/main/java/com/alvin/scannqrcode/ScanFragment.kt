@@ -1,12 +1,14 @@
 package com.alvin.scannqrcode
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.fragment.app.Fragment
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.budiyev.android.codescanner.CodeScanner
 import com.budiyev.android.codescanner.CodeScannerView
@@ -44,11 +46,19 @@ class ScanFragment : Fragment() {
     private fun startCodeScanner() {
         val activity = requireActivity()
         codeScanner = CodeScanner(activity, scannerView)
-        codeScanner.decodeCallback = DecodeCallback { _ ->
-
+        codeScanner.decodeCallback = DecodeCallback {
+            activity.runOnUiThread {
+                navigateToDetailsActivity(it.text)
+            }
         }
 
         codeScanner.startPreview()
+    }
+
+    private fun navigateToDetailsActivity(qrCodeData: String) {
+        val intent = Intent(requireContext(), QRCodeDetailsActivity::class.java)
+        intent.putExtra("qr_code_data", qrCodeData)
+        startActivity(intent)
     }
 
     @Deprecated("Deprecated in Java")
